@@ -7,17 +7,14 @@ import simpleImportSort from "eslint-plugin-simple-import-sort";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Override default ignores of eslint-config-next.
   globalIgnores([
-    // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Project-specific:
     "node_modules/**",
     "coverage/**",
-    "lib/generated/**",
+    "src/lib/generated/**",
   ]),
 
   {
@@ -31,6 +28,15 @@ const eslintConfig = defineConfig([
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: "memberLike",
+          modifiers: ["private"],
+          format: ["camelCase"],
+          leadingUnderscore: "require",
+        },
+      ],
       "react/prop-types": "off",
       "react/react-in-jsx-scope": "off",
       "react/no-unescaped-entities": "off",
@@ -40,23 +46,11 @@ const eslintConfig = defineConfig([
         "error",
         {
           groups: [
-            // Side effect imports ("server-only", "dotenv/config", polyfills).
             ["^\\u0000"],
-            // React / Next / other packages.
             ["^react", "^next", "^@?\\w"],
-            // Path aliases, most specific first.
-            ["^@/stores(/.*|$)"],
-            ["^@/components(/.*|$)"],
-            ["^@/hooks(/.*|$)"],
-            ["^@/lib(/.*|$)"],
-            ["^@/services(/.*|$)"],
-            ["^@/utils(/.*|$)"],
-            ["^@/types(/.*|$)"],
             ["^@/"],
-            // Parent imports, then sibling / index imports.
             ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
             ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
-            // Style imports.
             ["^.+\\.?(css)$"],
           ],
         },
@@ -67,8 +61,6 @@ const eslintConfig = defineConfig([
     },
   },
 
-  // Must stay last: disables stylistic rules that clash with Prettier and
-  // reports Prettier differences as ESLint errors.
   prettierRecommended,
 ]);
 
