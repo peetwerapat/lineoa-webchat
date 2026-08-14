@@ -5,6 +5,8 @@ export type TCustomerEntity = {
   lineUserId: string;
   displayName: string | null;
   pictureUrl: string | null;
+  unreadCount: number;
+  lastReadAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 };

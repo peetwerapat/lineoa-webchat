@@ -40,7 +40,9 @@ export class IngestLineMessageUseCase {
       payload: input.payload,
     });
 
-    this._publish(customer, message);
+    const updated = await this._customerRepository.incrementUnread(customer.id);
+
+    this._publish(updated, message);
 
     return message;
   }

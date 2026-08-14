@@ -20,5 +20,6 @@ export const toCustomerDto = (
   lineUserId: customer.lineUserId,
   displayName: customer.displayName,
   pictureUrl: customer.pictureUrl,
+  unreadCount: customer.unreadCount,
   lastMessage: lastMessage ? toMessageDto(lastMessage) : null,
 });

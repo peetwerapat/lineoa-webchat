@@ -16,6 +16,8 @@ const toCustomerEntity = (customer: TCustomerRow): TCustomerEntity => ({
   lineUserId: customer.lineUserId,
   displayName: customer.displayName,
   pictureUrl: customer.pictureUrl,
+  unreadCount: customer.unreadCount,
+  lastReadAt: customer.lastReadAt,
   createdAt: customer.createdAt,
   updatedAt: customer.updatedAt,
 });
@@ -37,6 +39,24 @@ export class CustomerPrismaRepository implements ICustomerRepository {
 
   async create(input: TCreateCustomerInput) {
     const customer = await prisma.customer.create({ data: input });
+
+    return toCustomerEntity(customer);
+  }
+
+  async incrementUnread(id: string) {
+    const customer = await prisma.customer.update({
+      where: { id },
+      data: { unreadCount: { increment: 1 } },
+    });
+
+    return toCustomerEntity(customer);
+  }
+
+  async markRead(id: string) {
+    const customer = await prisma.customer.update({
+      where: { id },
+      data: { unreadCount: 0, lastReadAt: new Date() },
+    });
 
     return toCustomerEntity(customer);
   }
