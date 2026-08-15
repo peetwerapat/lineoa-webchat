@@ -1,8 +1,8 @@
-export interface IMeta {
+export interface IPagination {
   page: number;
   limit: number;
   totalPages?: number;
-  total?: number;
+  totalCount?: number;
 }
 
 export interface IOption {
@@ -11,15 +11,16 @@ export interface IOption {
   extra?: string;
 }
 
-export interface IBaseResponseData<T> {
+export interface IBaseResponse {
+  statusCode: number;
+  message: string;
+}
+
+export interface IBaseResponseData<T> extends IBaseResponse {
   data: T;
 }
 
-export interface IPagination {
-  totalCount: number;
-  totalPages: number;
-}
-
-export interface IBaseResponseDataWithPaginate<T> extends IPagination {
+export interface IResponseWithPaginate<T> extends IBaseResponse {
   data: T;
+  meta: IPagination;
 }

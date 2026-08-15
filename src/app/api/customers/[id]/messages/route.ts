@@ -3,17 +3,34 @@ import { HTTPFetchError } from "@line/bot-sdk";
 
 import { CustomerNotFoundError } from "@/application/use-cases/send-message.use-case";
 import { container } from "@/infrastructure/container";
+import {
+  apiError,
+  apiSuccess,
+  apiSuccessWithPaginate,
+} from "@/lib/apiResponse";
 import { EHttpStatusCode } from "@/types/enum";
 
 export const dynamic = "force-dynamic";
 
 type TMessageRoute = RouteContext<"/api/customers/[id]/messages">;
 
-export async function GET(_request: NextRequest, ctx: TMessageRoute) {
-  const { id } = await ctx.params;
-  const messages = await container.listMessages.execute(id);
+const toPositiveInt = (value: string | null) => {
+  const parsed = Number(value);
 
-  return Response.json({ data: messages });
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+};
+
+export async function GET(request: NextRequest, ctx: TMessageRoute) {
+  const { id } = await ctx.params;
+  const { searchParams } = request.nextUrl;
+
+  const { data, meta } = await container.listMessages.execute({
+    customerId: id,
+    page: toPositiveInt(searchParams.get("page")),
+    limit: toPositiveInt(searchParams.get("limit")),
+  });
+
+  return apiSuccessWithPaginate(data, meta);
 }
 
 export async function POST(request: NextRequest, ctx: TMessageRoute) {
@@ -25,10 +42,7 @@ export async function POST(request: NextRequest, ctx: TMessageRoute) {
 
   const content = typeof body.content === "string" ? body.content.trim() : "";
   if (!content) {
-    return Response.json(
-      { message: "content is required" },
-      { status: EHttpStatusCode.BAD_REQUEST }
-    );
+    return apiError(EHttpStatusCode.BAD_REQUEST, "content is required");
   }
 
   try {
@@ -38,16 +52,13 @@ export async function POST(request: NextRequest, ctx: TMessageRoute) {
       sentBy: typeof body.sentBy === "string" ? body.sentBy : undefined,
     });
 
-    return Response.json(
-      { data: message },
-      { status: EHttpStatusCode.CREATED }
-    );
+    return apiSuccess(message, {
+      statusCode: EHttpStatusCode.CREATED,
+      message: "Message sent",
+    });
   } catch (error) {
     if (error instanceof CustomerNotFoundError) {
-      return Response.json(
-        { message: "Customer not found" },
-        { status: EHttpStatusCode.NOT_FOUND }
-      );
+      return apiError(EHttpStatusCode.NOT_FOUND, "Customer not found");
     }
 
     if (error instanceof HTTPFetchError) {
@@ -57,9 +68,9 @@ export async function POST(request: NextRequest, ctx: TMessageRoute) {
         error.body
       );
 
-      return Response.json(
-        { message: "Failed to deliver the message to LINE" },
-        { status: EHttpStatusCode.SERVER_ERROR }
+      return apiError(
+        EHttpStatusCode.SERVER_ERROR,
+        "Failed to deliver the message to LINE"
       );
     }
 
