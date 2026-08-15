@@ -48,7 +48,16 @@ export const patchLastMessage = (
   );
 };
 
-export const appendMessage = (
+const isSameMessage = (a: TMessage, b: TMessage) =>
+  a.id === b.id || (Boolean(a.clientId) && a.clientId === b.clientId);
+
+/**
+ * Inserts a message, or replaces it in place when the thread already holds it.
+ * Matching on `clientId` as well as `id` is what lets the server's copy take
+ * over the optimistic bubble — whichever of the POST response or the SSE echo
+ * lands first.
+ */
+export const upsertMessage = (
   queryClient: QueryClient,
   customerId: string,
   message: TMessage
@@ -59,9 +68,20 @@ export const appendMessage = (
       if (!current) return current;
 
       const isKnown = current.pages.some((page) =>
-        page.data.some((item) => item.id === message.id)
+        page.data.some((item) => isSameMessage(item, message))
       );
-      if (isKnown) return current;
+
+      if (isKnown) {
+        return {
+          ...current,
+          pages: current.pages.map((page) => ({
+            ...page,
+            data: page.data.map((item) =>
+              isSameMessage(item, message) ? message : item
+            ),
+          })),
+        };
+      }
 
       const [newest, ...older] = current.pages;
 

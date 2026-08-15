@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { appendMessage, upsertCustomer } from "@/features/chat/util/chatCache";
+import { upsertCustomer, upsertMessage } from "@/features/chat/util/chatCache";
 import { chatKeys } from "@/features/chat/util/chatKeys";
 import { TChatEvent } from "@/types/chat/chatType";
 
@@ -16,7 +16,7 @@ export const useChatStream = () => {
       const payload = JSON.parse(event.data) as TChatEvent;
 
       if (payload.type === "message.created") {
-        appendMessage(queryClient, payload.customerId, payload.message);
+        upsertMessage(queryClient, payload.customerId, payload.message);
         return;
       }
 

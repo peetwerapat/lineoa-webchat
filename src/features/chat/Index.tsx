@@ -19,11 +19,11 @@ export const ChatConsole = () => {
     isLoadingMore,
     loadMore,
     draft,
-    isSending,
     handleSelectCustomer,
     handleCloseCustomer,
     handleChangeDraft,
     handleSendMessage,
+    handleRetryMessage,
   } = useChatConsole();
 
   return (
@@ -52,10 +52,10 @@ export const ChatConsole = () => {
               isLoadingMore={isLoadingMore}
               onLoadMore={loadMore}
               onBack={handleCloseCustomer}
+              onRetryMessage={handleRetryMessage}
             />
             <MessageComposer
               value={draft}
-              isSending={isSending}
               onChange={handleChangeDraft}
               onSubmit={handleSendMessage}
             />

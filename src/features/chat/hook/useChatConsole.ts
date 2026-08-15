@@ -24,9 +24,7 @@ export const useChatConsole = () => {
     isLoadingMore,
     loadMore,
   } = useFetchMessages(activeCustomerId);
-  const { sendMessage, isPending: isSending } = useSendMessage(
-    activeCustomerId ?? ""
-  );
+  const { sendMessage, retryMessage } = useSendMessage(activeCustomerId ?? "");
   const { markRead } = useMarkCustomerRead(activeCustomerId ?? "");
 
   const activeCustomer =
@@ -50,7 +48,8 @@ export const useChatConsole = () => {
     const content = draft.trim();
     if (!activeCustomerId || !content) return;
 
-    sendMessage({ content }, { onSuccess: () => clearDraft(activeCustomerId) });
+    clearDraft(activeCustomerId);
+    sendMessage(content);
   };
 
   return {
@@ -64,10 +63,10 @@ export const useChatConsole = () => {
     isLoadingMore,
     loadMore,
     draft,
-    isSending,
     handleSelectCustomer: setActiveCustomer,
     handleCloseCustomer: () => setActiveCustomer(null),
     handleChangeDraft,
     handleSendMessage,
+    handleRetryMessage: retryMessage,
   };
 };

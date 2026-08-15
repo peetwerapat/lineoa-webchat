@@ -18,6 +18,7 @@ type MessageThreadProps = {
   isLoadingMore: boolean;
   onLoadMore: () => void;
   onBack: () => void;
+  onRetryMessage: (message: TMessage) => void;
 };
 
 const LOAD_MORE_OFFSET = 80;
@@ -31,6 +32,7 @@ export const MessageThread = ({
   isLoadingMore,
   onLoadMore,
   onBack,
+  onRetryMessage,
 }: MessageThreadProps) => {
   const viewportRef = useRef<HTMLDivElement>(null);
   const oldestMessageId = messages[0]?.id ?? null;
@@ -147,7 +149,11 @@ export const MessageThread = ({
                 </div>
 
                 {group.messages.map((message) => (
-                  <MessageBubble key={message.id} message={message} />
+                  <MessageBubble
+                    key={message.id}
+                    message={message}
+                    onRetry={onRetryMessage}
+                  />
                 ))}
               </div>
             ))
