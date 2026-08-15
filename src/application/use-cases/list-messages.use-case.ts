@@ -1,10 +1,8 @@
 import { toMessageDto } from "@/application/mappers/chat.mapper";
+import { DEFAULT_MESSAGE_LIMIT, MAX_MESSAGE_LIMIT } from "@/constants/chat";
 import { IMessageRepository } from "@/domain/repositories/message.repository";
 import { TMessage } from "@/types/chat/chatType";
 import { IPagination } from "@/types/globalType";
-
-export const DEFAULT_MESSAGE_LIMIT = 30;
-export const MAX_MESSAGE_LIMIT = 100;
 
 export type TListMessagesInput = {
   customerId: string;

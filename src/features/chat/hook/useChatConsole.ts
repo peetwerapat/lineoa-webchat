@@ -66,6 +66,7 @@ export const useChatConsole = () => {
     draft,
     isSending,
     handleSelectCustomer: setActiveCustomer,
+    handleCloseCustomer: () => setActiveCustomer(null),
     handleChangeDraft,
     handleSendMessage,
   };

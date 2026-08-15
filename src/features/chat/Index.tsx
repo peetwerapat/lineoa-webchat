@@ -5,6 +5,7 @@ import { EmptyThread } from "@/features/chat/components/EmptyThread";
 import { MessageComposer } from "@/features/chat/components/MessageComposer";
 import { MessageThread } from "@/features/chat/components/MessageThread";
 import { useChatConsole } from "@/features/chat/hook/useChatConsole";
+import { cn } from "@/lib/utils";
 
 export const ChatConsole = () => {
   const {
@@ -20,6 +21,7 @@ export const ChatConsole = () => {
     draft,
     isSending,
     handleSelectCustomer,
+    handleCloseCustomer,
     handleChangeDraft,
     handleSendMessage,
   } = useChatConsole();
@@ -30,10 +32,16 @@ export const ChatConsole = () => {
         customers={customers}
         activeCustomerId={activeCustomerId}
         isLoading={isLoadingCustomers}
+        className={cn(activeCustomer && "hidden md:flex")}
         onSelect={handleSelectCustomer}
       />
 
-      <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      <section
+        className={cn(
+          "min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
+          activeCustomer ? "flex" : "hidden md:flex"
+        )}
+      >
         {activeCustomer ? (
           <>
             <MessageThread
@@ -43,6 +51,7 @@ export const ChatConsole = () => {
               hasMore={hasMore}
               isLoadingMore={isLoadingMore}
               onLoadMore={loadMore}
+              onBack={handleCloseCustomer}
             />
             <MessageComposer
               value={draft}

@@ -3,12 +3,14 @@ import { MessageSquare } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CustomerListItem } from "@/features/chat/components/CustomerListItem";
+import { cn } from "@/lib/utils";
 import { TCustomer } from "@/types/chat/chatType";
 
 type CustomerListProps = {
   customers: TCustomer[];
   activeCustomerId: string | null;
   isLoading: boolean;
+  className?: string;
   onSelect: (customerId: string) => void;
 };
 
@@ -16,9 +18,15 @@ export const CustomerList = ({
   customers,
   activeCustomerId,
   isLoading,
+  className,
   onSelect,
 }: CustomerListProps) => (
-  <aside className="flex h-full w-80 shrink-0 flex-col overflow-hidden border-r">
+  <aside
+    className={cn(
+      "flex h-full w-full shrink-0 flex-col overflow-hidden border-r md:w-80",
+      className
+    )}
+  >
     <div className="flex h-14 items-center gap-2 border-b px-4">
       <MessageSquare className="size-4 text-muted-foreground" />
       <h1 className="text-sm font-semibold">แชททั้งหมด</h1>
