@@ -17,6 +17,7 @@ export const messageSelect = {
   direction: true,
   messageType: true,
   content: true,
+  payload: true,
   sentBy: true,
   createdAt: true,
 } as const;
@@ -29,6 +30,7 @@ export const toMessageEntity = (message: TMessageRow): TMessageEntity => ({
   direction: parseMessageDirection(message.direction),
   messageType: parseMessageType(message.messageType),
   content: message.content,
+  payload: message.payload,
   sentBy: message.sentBy,
   createdAt: message.createdAt,
 });

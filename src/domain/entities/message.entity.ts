@@ -6,6 +6,7 @@ export type TMessageEntity = {
   direction: EMessageDirection;
   messageType: EMessageType;
   content: string;
+  payload: unknown;
   sentBy: string | null;
   createdAt: Date;
 };
