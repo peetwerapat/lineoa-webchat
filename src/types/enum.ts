@@ -13,6 +13,12 @@ export enum EMessageDirection {
   OUTBOUND = "OUTBOUND",
 }
 
+export enum EMessageStatus {
+  PENDING = "PENDING",
+  SENT = "SENT",
+  FAILED = "FAILED",
+}
+
 export enum EMessageType {
   TEXT = "TEXT",
   IMAGE = "IMAGE",

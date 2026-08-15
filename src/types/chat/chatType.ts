@@ -1,4 +1,4 @@
-import { EMessageDirection, EMessageType } from "@/types/enum";
+import { EMessageDirection, EMessageStatus, EMessageType } from "@/types/enum";
 
 export type TSticker = {
   packageId: string | null;
@@ -11,8 +11,10 @@ export type TSticker = {
 export type TMessage = {
   id: string;
   customerId: string;
+  clientId: string | null;
   direction: EMessageDirection;
   messageType: EMessageType;
+  status: EMessageStatus;
   content: string;
   sticker: TSticker | null;
   sentBy: string | null;
@@ -29,6 +31,7 @@ export type TCustomer = {
 
 export type TSendMessageRequest = {
   content: string;
+  clientId: string;
   sentBy?: string;
 };
 

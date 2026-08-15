@@ -4,11 +4,12 @@ import { ILineMessagingGateway } from "@/domain/gateways/line-messaging.gateway"
 import { ICustomerRepository } from "@/domain/repositories/customer.repository";
 import { IMessageRepository } from "@/domain/repositories/message.repository";
 import { TMessage } from "@/types/chat/chatType";
-import { EMessageDirection, EMessageType } from "@/types/enum";
+import { EMessageDirection, EMessageStatus, EMessageType } from "@/types/enum";
 
 export type TSendMessageInput = {
   customerId: string;
   content: string;
+  clientId?: string;
   sentBy?: string;
 };
 
@@ -31,18 +32,43 @@ export class SendMessageUseCase {
     const customer = await this._customerRepository.findById(input.customerId);
     if (!customer) throw new CustomerNotFoundError(input.customerId);
 
-    await this._lineMessagingGateway.pushText(
-      customer.lineUserId,
-      input.content
-    );
+    const existing = input.clientId
+      ? await this._messageRepository.findByClientId(input.clientId)
+      : null;
 
-    const message = await this._messageRepository.create({
-      customerId: customer.id,
-      direction: EMessageDirection.OUTBOUND,
-      messageType: EMessageType.TEXT,
-      content: input.content,
-      sentBy: input.sentBy ?? null,
-    });
+    // A retry of an already delivered message must not push to LINE twice.
+    if (existing?.status === EMessageStatus.SENT) return toMessageDto(existing);
+
+    const pending =
+      existing ??
+      (await this._messageRepository.create({
+        customerId: customer.id,
+        clientId: input.clientId ?? null,
+        direction: EMessageDirection.OUTBOUND,
+        messageType: EMessageType.TEXT,
+        status: EMessageStatus.PENDING,
+        content: input.content,
+        sentBy: input.sentBy ?? null,
+      }));
+
+    try {
+      await this._lineMessagingGateway.pushText(
+        customer.lineUserId,
+        pending.content
+      );
+    } catch (error) {
+      await this._messageRepository.updateStatus(
+        pending.id,
+        EMessageStatus.FAILED
+      );
+
+      throw error;
+    }
+
+    const message = await this._messageRepository.updateStatus(
+      pending.id,
+      EMessageStatus.SENT
+    );
 
     this._chatEventBus.publish({
       type: "message.created",

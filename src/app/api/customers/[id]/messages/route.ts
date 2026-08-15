@@ -37,6 +37,7 @@ export async function POST(request: NextRequest, ctx: TMessageRoute) {
   const { id } = await ctx.params;
   const body = (await request.json()) as {
     content?: unknown;
+    clientId?: unknown;
     sentBy?: unknown;
   };
 
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest, ctx: TMessageRoute) {
     const message = await container.sendMessage.execute({
       customerId: id,
       content,
+      clientId: typeof body.clientId === "string" ? body.clientId : undefined,
       sentBy: typeof body.sentBy === "string" ? body.sentBy : undefined,
     });
 
