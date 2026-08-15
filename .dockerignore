@@ -1,0 +1,27 @@
+.git
+.github
+node_modules
+.next
+out
+build
+coverage
+
+# Secrets never belong in the image — they are passed at run time.
+.env
+.env.*
+!.env.example
+
+# Regenerated inside the build.
+src/lib/generated
+
+.husky
+.vscode
+.idea
+*.log
+.DS_Store
+README.md
+AGENTS.md
+CLAUDE.md
+Dockerfile
+.dockerignore
+tsconfig.tsbuildinfo
