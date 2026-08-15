@@ -7,8 +7,10 @@ import { EMessageType } from "@/types/enum";
 export const toMessageDto = (message: TMessageEntity): TMessage => ({
   id: message.id,
   customerId: message.customerId,
+  clientId: message.clientId,
   direction: message.direction,
   messageType: message.messageType,
+  status: message.status,
   content: message.content,
   sticker:
     message.messageType === EMessageType.STICKER
