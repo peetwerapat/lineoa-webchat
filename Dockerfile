@@ -8,14 +8,9 @@ FROM base AS deps
 WORKDIR /app
 
 COPY package.json ./
-COPY yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+COPY pnpm-lock.yaml* ./
 
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; \
-  else echo "No lockfile found." && exit 1; \
-  fi
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # Stage 3: Build the application
 FROM base AS builder
