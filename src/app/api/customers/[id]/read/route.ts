@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 
 import { CustomerNotFoundError } from "@/application/use-cases/send-message.use-case";
 import { container } from "@/infrastructure/container";
+import { apiError, apiSuccess } from "@/lib/apiResponse";
 import { EHttpStatusCode } from "@/types/enum";
 
 export const dynamic = "force-dynamic";
@@ -14,13 +15,10 @@ export async function PATCH(_request: NextRequest, ctx: TReadRoute) {
   try {
     const customer = await container.markCustomerRead.execute(id);
 
-    return Response.json({ data: customer });
+    return apiSuccess(customer, { message: "Marked as read" });
   } catch (error) {
     if (error instanceof CustomerNotFoundError) {
-      return Response.json(
-        { message: "Customer not found" },
-        { status: EHttpStatusCode.NOT_FOUND }
-      );
+      return apiError(EHttpStatusCode.NOT_FOUND, "Customer not found");
     }
 
     throw error;

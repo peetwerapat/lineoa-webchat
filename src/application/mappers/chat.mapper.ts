@@ -17,7 +17,6 @@ export const toCustomerDto = (
   lastMessage: TMessageEntity | null
 ): TCustomer => ({
   id: customer.id,
-  lineUserId: customer.lineUserId,
   displayName: customer.displayName,
   pictureUrl: customer.pictureUrl,
   unreadCount: customer.unreadCount,

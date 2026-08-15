@@ -4,6 +4,7 @@ import { webhook } from "@line/bot-sdk";
 import { container } from "@/infrastructure/container";
 import { verifyLineSignature } from "@/infrastructure/line/line.client";
 import { toIngestInput } from "@/infrastructure/line/line-message.mapper";
+import { apiError, apiSuccess } from "@/lib/apiResponse";
 import { EHttpStatusCode } from "@/types/enum";
 
 export const dynamic = "force-dynamic";
@@ -12,10 +13,7 @@ export async function POST(request: NextRequest) {
   const rawBody = await request.text();
 
   if (!verifyLineSignature(rawBody, request.headers.get("x-line-signature"))) {
-    return Response.json(
-      { message: "Invalid signature" },
-      { status: EHttpStatusCode.UNAUTHORIZED }
-    );
+    return apiError(EHttpStatusCode.UNAUTHORIZED, "Invalid signature");
   }
 
   const body = JSON.parse(rawBody) as webhook.CallbackRequest;
@@ -33,5 +31,5 @@ export async function POST(request: NextRequest) {
     }
   });
 
-  return Response.json({ data: { ok: true } });
+  return apiSuccess({ received: inputs.length });
 }

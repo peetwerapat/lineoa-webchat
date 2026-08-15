@@ -5,11 +5,27 @@ import {
   ICustomerRepository,
   TCreateCustomerInput,
 } from "@/domain/repositories/customer.repository";
-import { toMessageEntity } from "@/infrastructure/prisma/message.prisma.repository";
+import {
+  messageSelect,
+  toMessageEntity,
+} from "@/infrastructure/prisma/message.prisma.repository";
 import { prisma } from "@/infrastructure/prisma/prisma.client";
-import { CustomerModel, MessageModel } from "@/lib/generated/prisma/models";
+import { CustomerGetPayload } from "@/lib/generated/prisma/models";
 
-type TCustomerRow = CustomerModel & { messages?: MessageModel[] };
+const customerSelect = {
+  id: true,
+  lineUserId: true,
+  displayName: true,
+  pictureUrl: true,
+  unreadCount: true,
+} as const;
+
+const customerWithLastMessageSelect = {
+  ...customerSelect,
+  messages: { orderBy: { createdAt: "desc" }, take: 1, select: messageSelect },
+} as const;
+
+type TCustomerRow = CustomerGetPayload<{ select: typeof customerSelect }>;
 
 const toCustomerEntity = (customer: TCustomerRow): TCustomerEntity => ({
   id: customer.id,
@@ -17,14 +33,14 @@ const toCustomerEntity = (customer: TCustomerRow): TCustomerEntity => ({
   displayName: customer.displayName,
   pictureUrl: customer.pictureUrl,
   unreadCount: customer.unreadCount,
-  lastReadAt: customer.lastReadAt,
-  createdAt: customer.createdAt,
-  updatedAt: customer.updatedAt,
 });
 
 export class CustomerPrismaRepository implements ICustomerRepository {
   async findById(id: string) {
-    const customer = await prisma.customer.findUnique({ where: { id } });
+    const customer = await prisma.customer.findUnique({
+      where: { id },
+      select: customerSelect,
+    });
 
     return customer ? toCustomerEntity(customer) : null;
   }
@@ -32,13 +48,17 @@ export class CustomerPrismaRepository implements ICustomerRepository {
   async findByLineUserId(lineUserId: string) {
     const customer = await prisma.customer.findUnique({
       where: { lineUserId },
+      select: customerSelect,
     });
 
     return customer ? toCustomerEntity(customer) : null;
   }
 
   async create(input: TCreateCustomerInput) {
-    const customer = await prisma.customer.create({ data: input });
+    const customer = await prisma.customer.create({
+      data: input,
+      select: customerSelect,
+    });
 
     return toCustomerEntity(customer);
   }
@@ -47,6 +67,7 @@ export class CustomerPrismaRepository implements ICustomerRepository {
     const customer = await prisma.customer.update({
       where: { id },
       data: { unreadCount: { increment: 1 } },
+      select: customerSelect,
     });
 
     return toCustomerEntity(customer);
@@ -56,6 +77,7 @@ export class CustomerPrismaRepository implements ICustomerRepository {
     const customer = await prisma.customer.update({
       where: { id },
       data: { unreadCount: 0, lastReadAt: new Date() },
+      select: customerSelect,
     });
 
     return toCustomerEntity(customer);
@@ -63,8 +85,8 @@ export class CustomerPrismaRepository implements ICustomerRepository {
 
   async listWithLastMessage(take: number) {
     const customers = await prisma.customer.findMany({
-      include: { messages: { orderBy: { createdAt: "desc" }, take: 1 } },
       take,
+      select: customerWithLastMessageSelect,
     });
 
     return customers

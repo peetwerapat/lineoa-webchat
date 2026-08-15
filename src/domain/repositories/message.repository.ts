@@ -11,8 +11,16 @@ export type TCreateMessageInput = {
   sentBy?: string | null;
 };
 
+export type TListMessagesParams = {
+  customerId: string;
+  page: number;
+  limit: number;
+};
+
 export interface IMessageRepository {
   findByLineMessageId(lineMessageId: string): Promise<TMessageEntity | null>;
   create(input: TCreateMessageInput): Promise<TMessageEntity>;
-  listByCustomer(customerId: string, take: number): Promise<TMessageEntity[]>;
+  listByCustomer(params: TListMessagesParams): Promise<TMessageEntity[]>;
+  countByCustomer(customerId: string): Promise<number>;
+  findLatestByCustomer(customerId: string): Promise<TMessageEntity | null>;
 }

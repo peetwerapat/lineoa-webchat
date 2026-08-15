@@ -6,9 +6,6 @@ export type TCustomerEntity = {
   displayName: string | null;
   pictureUrl: string | null;
   unreadCount: number;
-  lastReadAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
 export type TCustomerWithLastMessage = TCustomerEntity & {

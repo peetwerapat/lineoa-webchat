@@ -17,11 +17,9 @@ export class MarkCustomerReadUseCase {
     if (!existing) throw new CustomerNotFoundError(customerId);
 
     const customer = await this._customerRepository.markRead(customerId);
-    const [lastMessage] = await this._messageRepository.listByCustomer(
-      customerId,
-      1
-    );
-    const dto = toCustomerDto(customer, lastMessage ?? null);
+    const lastMessage =
+      await this._messageRepository.findLatestByCustomer(customerId);
+    const dto = toCustomerDto(customer, lastMessage);
 
     this._chatEventBus.publish({
       type: "customer.updated",
