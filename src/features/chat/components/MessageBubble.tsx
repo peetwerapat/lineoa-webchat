@@ -16,7 +16,7 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
 
   return (
     <div className={cn("flex", isOutbound ? "justify-end" : "justify-start")}>
-      <div className="max-w-[70%] space-y-1">
+      <div className="max-w-[85%] space-y-1 md:max-w-[70%]">
         {sticker ? (
           <div
             className={cn("flex", isOutbound ? "justify-end" : "justify-start")}

@@ -26,7 +26,7 @@ export const StickerBubble = ({ sticker }: StickerBubbleProps) => {
       width={148}
       height={148}
       unoptimized
-      className="h-[148px] w-[148px] object-contain"
+      className="size-28 object-contain md:size-[148px]"
       onError={() => {
         if (source !== sticker.fallbackImageUrl) {
           setSource(sticker.fallbackImageUrl);

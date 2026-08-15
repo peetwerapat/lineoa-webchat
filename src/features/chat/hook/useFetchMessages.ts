@@ -1,10 +1,9 @@
 import { useMemo } from "react";
 
+import { DEFAULT_MESSAGE_LIMIT } from "@/constants/chat";
 import { chatKeys } from "@/features/chat/util/chatKeys";
 import { useInfiniteQueryGet } from "@/services/globalQuery";
 import { TMessage } from "@/types/chat/chatType";
-
-export const MESSAGE_PAGE_SIZE = 30;
 
 export const useFetchMessages = (customerId: string | null) => {
   const {
@@ -17,7 +16,7 @@ export const useFetchMessages = (customerId: string | null) => {
   } = useInfiniteQueryGet<TMessage>(
     chatKeys.messages(customerId ?? ""),
     `/api/customers/${customerId}/messages`,
-    { limit: MESSAGE_PAGE_SIZE },
+    { limit: DEFAULT_MESSAGE_LIMIT },
     { enabled: Boolean(customerId) }
   );
 

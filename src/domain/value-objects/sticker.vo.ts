@@ -1,10 +1,4 @@
-export type TStickerVo = {
-  packageId: string | null;
-  stickerId: string;
-  resourceType: string;
-  imageUrl: string;
-  fallbackImageUrl: string;
-};
+import { TSticker } from "@/types/chat/chatType";
 
 const STICKER_CDN_BASE =
   "https://stickershop.line-scdn.net/stickershop/v1/sticker";
@@ -28,7 +22,7 @@ const readString = (source: Record<string, unknown>, key: string) => {
   return typeof value === "string" && value.length > 0 ? value : null;
 };
 
-export const parseSticker = (payload: unknown): TStickerVo | null => {
+export const parseSticker = (payload: unknown): TSticker | null => {
   if (!payload || typeof payload !== "object") return null;
 
   const source = payload as Record<string, unknown>;

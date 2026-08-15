@@ -1,8 +1,9 @@
 import { UIEvent, useEffect, useLayoutEffect, useRef } from "react";
-import { Loader2 } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MessageBubble } from "@/features/chat/components/MessageBubble";
@@ -16,6 +17,7 @@ type MessageThreadProps = {
   hasMore: boolean;
   isLoadingMore: boolean;
   onLoadMore: () => void;
+  onBack: () => void;
 };
 
 const LOAD_MORE_OFFSET = 80;
@@ -28,6 +30,7 @@ export const MessageThread = ({
   hasMore,
   isLoadingMore,
   onLoadMore,
+  onBack,
 }: MessageThreadProps) => {
   const viewportRef = useRef<HTMLDivElement>(null);
   const oldestMessageId = messages[0]?.id ?? null;
@@ -81,7 +84,18 @@ export const MessageThread = ({
 
   return (
     <>
-      <header className="flex h-14 shrink-0 items-center gap-3 border-b px-4">
+      <header className="flex h-14 shrink-0 items-center gap-2 border-b px-2 md:gap-3 md:px-4">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="size-9 md:hidden"
+          onClick={onBack}
+        >
+          <ChevronLeft className="size-5" />
+          <span className="sr-only">กลับไปรายการแชท</span>
+        </Button>
+
         <Avatar className="size-8">
           <AvatarImage src={customer.pictureUrl ?? undefined} alt="" />
           <AvatarFallback>
